@@ -125,3 +125,13 @@ void SHA1::processBuffer()
         buffer.erase(buffer.begin(), buffer.begin() + 64);
     }
 }
+
+int main()
+{
+    SHA1 sha1;
+    std::string input = "Hello, SHA-1!";
+    sha1.update(input);
+    std::string hash = sha1.final();
+    std::cout << "SHA-1 hash of \"" << input << "\": " << hash << std::endl;
+    return 0;
+}
