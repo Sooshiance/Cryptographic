@@ -72,3 +72,69 @@ std::pair<std::pair<std::int32_t, std::int32_t>, std::pair<std::int32_t, std::in
 
     return std::make_pair(std::make_pair(e, n), std::make_pair(d, n));
 }
+
+std::int32_t mod_exp(std::int32_t base, std::int32_t exp, std::int32_t mod)
+{
+    // performs modular exponentiation
+
+    std::int32_t result = 1;
+    base = base % mod;
+    while (exp > 0)
+    {
+        if (exp % 2 == 1)
+        {
+            result = (result * base) % mod;
+        }
+        exp = exp >> 1;
+        base = (base * base) % mod;
+    }
+    return result;
+}
+
+std::vector<std::int32_t> encrypt(std::pair<std::int32_t, std::int32_t> pk, std::string plaintext)
+{
+    std::vector<std::int32_t> cipher;
+
+    for (char &c : plaintext)
+    {
+        cipher.push_back(mod_exp(c, pk.first, pk.second));
+    }
+
+    return cipher;
+}
+
+std::string decrypt(std::pair<std::int32_t, std::int32_t> pk, std::vector<std::int32_t> ciphertext)
+{
+    std::string plain = "";
+
+    for (std::int32_t &c : ciphertext)
+    {
+        plain += static_cast<char>(mod_exp(c, pk.first, pk.second));
+    }
+
+    return plain;
+}
+
+int main()
+{
+    std::int32_t p = 61, q = 53;
+
+    auto keys = generate_key_pair(p, q);
+
+    std::string message = "Hello";
+
+    auto encrypted_message = encrypt(keys.first, message);
+
+    for (std::int32_t x : encrypted_message)
+    {
+        std::cout << x << std::endl;
+    }
+
+    std::cout << "\n";
+
+    std::string decrypted_message = decrypt(keys.second, encrypted_message);
+
+    std::cout << "Decrypted Message: " << decrypted_message << std::endl;
+
+    return 0;
+}
